@@ -1,0 +1,83 @@
+---
+title: "Analysis of March-1991 results"
+author: "Pablo Bello"
+date: "11/8/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+```{r}
+library(tidyverse)
+library(vroom)
+library(ggpubr)
+library(hrbrthemes)
+library(directlabels)
+library(ggsci)
+library(cowplot)
+```
+
+```{r}
+color_pal_2 <- c("#00798C","#EDAE49")
+color_pal_3 <- c("#00798C","#EDAE49","#D1495B")
+color_pal_5 <- c("#00798C","#EDAE49","#D1495B","#66A182","#2E4057")
+
+###### FIGURE 1 #####
+
+
+fig_1 <- vroom("March1991_i_50_t_50.csv") %>% 
+  rename( p1 = ...1) %>% 
+  pivot_longer(cols = c(`0.1`,`0.5`,`0.9`),names_to = "p2", values_to = "knowledge")
+
+
+fig_1 %>%
+  ggplot(aes(p1,knowledge, group = p2, color = p2)) +
+  geom_line () +
+  labs(x = "Socialization rate (p1)",
+       y = "Average equilibrium knowledge") +
+  scale_color_manual ( values = color_pal_3) +
+  geom_dl(aes(label = p2), method = "first.points") +
+  theme_pubr (legend = "right",border = TRUE,base_family = "Times") 
+
+
+
+#--- FIGURE 1_B (HEATMAP)
+
+fig_1_b <- vroom("March_1991_fig1b.csv") %>% 
+  rename( p1 = ...1) %>%
+  pivot_longer(cols = c(`0.1`,`0.2`,`0.3`,`0.4`,`0.5`,`0.6`,`0.7`,`0.8`,`0.9`),names_to = "p2", values_to = "knowledge") %>% 
+  mutate(p2 = as.numeric(p2))
+
+fig_1_b %>% 
+  ggplot(aes(p1,p2, fill = knowledge)) +
+  geom_tile () +
+  scale_fill_viridis_c() +
+  theme_ipsum_rc(grid = FALSE,axis_title_size = 11) 
+
+```
+
+```{r}
+###### FIGURE 2 #####
+
+fig_2 <- vroom("March_1991_fig2.csv", delim = ",") %>% 
+  rename(p1 = ...1) %>% 
+  mutate (knowledge = `0.5` / 50) %>% 
+  separate(col = p1 , into = c("type" , "p1"), sep ="_", remove = FALSE)  %>% 
+  mutate(p1 = as.numeric(p1))  %>% 
+  filter(p1 != 0.740 & knowledge != 0.6853333)
+
+fig_2 %>% 
+  ggplot(aes(p1,knowledge, group = type, color = type))+
+  geom_line() +
+  scale_color_manual (values = color_pal_2) +
+  geom_dl(aes(label = type), method = "lines2") +
+  labs (color = "",
+        x = "Average socialization rate (p1)",
+        y = "Average equilibrium knowledge") +
+  theme_pubr (legend = "right",border = TRUE,base_family = "Times") 
+
+```
+
