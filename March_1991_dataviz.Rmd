@@ -55,7 +55,7 @@ fig_1_b %>%
   ggplot(aes(p1,p2, fill = knowledge)) +
   geom_tile () +
   scale_fill_viridis_c() +
-  theme_ipsum_rc(grid = FALSE,axis_title_size = 11) 
+  #theme_ipsum_rc(grid = FALSE,axis_title_size = 11) 
 
 ```
 
@@ -79,5 +79,16 @@ fig_2 %>%
         y = "Average equilibrium knowledge") +
   theme_pubr (legend = "right",border = TRUE,base_family = "Times") 
 
+```
+
+
+
+
+
+```{r}
+vroom("March_1991_fig4.csv", delim = ",") %>% 
+  rename(p1 = ...1) %>% 
+  
+  separate(col = p1 , into = c("type" , "p1"), sep ="_", remove = FALSE) 
 ```
 

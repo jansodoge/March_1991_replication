@@ -24,17 +24,17 @@ getvote <- function(v) {
 
 # MODEL VARIABLES  ------------------------
 iterations = 80  # number of iteration, originally set to 80 in the paper
-time = 20  # iterations until equilibrium, a lazy solution to the steady state problem
+time = 50  # iterations until equilibrium, a lazy solution to the steady state problem
 m <- 30  # number of dimensions
 n <- 50  # number of people
 
 
-p3_list <- c(seq(0,1,0.1)) # turnover
+p3_list <- c(0,1,0.9) # turnover
 p4 <- 0  # environmental turbulence
 
 
 # lists forming the parmeter space for the learning rates
-P1_list <- c(0.1, 0.9)
+P1_list <- seq(.1, .9,0.1)
 P2_list <- c(0.5)
 
 
@@ -167,15 +167,28 @@ turnover_fig_data <- dplyr::bind_rows(turnover_fig_data, OUTPUT)
 
 
 
-save(turnover_fig_data, file = "simulation_data_fig4.RData")
+#save(turnover_fig_data, file = "simulation_data_fig4.RData")
+
+
+
+turnover_fig_data_a <- turnover_fig_data %>% 
+  filter(p1 %in% c(0.1,0.3,0.5,0.7,.9)) %>% 
+  mutate(p1 = as.factor(p1))
 
 
 
 
-ggplot(data = turnover_fig_data, aes(x = turnover_rate, y = `0.5`, group = p1))+
-  geom_line()+
+
+ggplot(data = turnover_fig_data, aes(x = turnover_rate, y = `0.5`, color = p1, group = p1))+
+  geom_line(size=2, alpha = 0.6)+
   ylab("Average Period-20 Code Knowledge")+
-  xlab("Turnover Rate")
+  xlab("Turnover Rate")+
+  #ylim(c(0.5,0.9))+
+  theme_pubr (legend = "right",border = TRUE,base_family = "Times")
+
+
+  
+  
 
 
 
